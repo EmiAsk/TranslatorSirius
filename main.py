@@ -79,11 +79,15 @@ class TranslatorWindow(QMainWindow, Ui_MainWindow):
     def play_voice_over(self):
         engine = pyttsx3.init()  # инициализация движка
         voices = engine.getProperty('voices')
-        if self.lang_to.currentText().lower() == 'russian':
-            engine.setProperty('voice', voices[0].id)
-        elif self.lang_to.currentText().lower() == 'english':
-            engine.setProperty('voice', voices[1].id)
-        else:
+
+        try:
+            if self.lang_to.currentText().lower() == 'russian':
+                engine.setProperty('voice', voices[0].id)
+            elif self.lang_to.currentText().lower() == 'english':
+                engine.setProperty('voice', voices[1].id)
+            else:
+                return
+        except Exception:
             return
 
         # зададим свойства
