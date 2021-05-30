@@ -83,6 +83,8 @@ class TranslatorWindow(QMainWindow, Ui_MainWindow):
             engine.setProperty('voice', voices[0].id)
         elif self.lang_to.currentText().lower() == 'english':
             engine.setProperty('voice', voices[1].id)
+        else:
+            return
 
         # зададим свойства
         engine.setProperty('rate', 200)  # скорость речи
