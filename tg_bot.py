@@ -62,7 +62,8 @@ def switch_lang(update, context):
         return
 
     context.user_data['lang'] = (from_lang, to_lang)
-    update.message.reply_text("Вы сменили языковую пару! Можете переводить командой /text ")
+    update.message.reply_text("Вы сменили языковую пару! Можете переводить командой /text "
+                              "или озвучивать /voice ")
 
 
 def translate_text(update, context):
@@ -86,7 +87,7 @@ def voice_over(update, context):
 
     if not text_to_voice:
         update.message.reply_text("Вы не написали текст!")
-    text_to_voice = ' '.join(context.args)
+    text_to_voice = ' '.join(context.args).strip()[:100]
 
     try:
         result_text = translate(text_to_voice, *context.user_data['lang'])
