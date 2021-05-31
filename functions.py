@@ -13,6 +13,9 @@ def translate(text, lang_to, lang_from):
     response = get(API_URL, params=params)
 
     if not response.__bool__():
+        if response.json()['code'] == 501:
+            raise Exception('Неподдерживаемая языковая пара! Смените её!')
+
         print("Ошибка выполнения запроса:")
         print(response.url)
         print("Http статус:", response.status_code, "(", response.reason, ")")

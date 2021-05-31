@@ -1,16 +1,17 @@
 import sys
+import os
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow
 # from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt, QEvent
 import pyperclip
+from gtts import gTTS
+import pygame
 
 from config import POSSIBLE_LANGS
 from functions import translate
 from untitled import Ui_MainWindow
-
-import pyttsx3
 
 
 def except_hook(cls, exception, traceback):
@@ -23,6 +24,8 @@ class TranslatorWindow(QMainWindow, Ui_MainWindow):
         super(TranslatorWindow, self).setupUi(self)
         # loadUi('untitled.ui', self)
         self.initUi()
+
+        pygame.init()
 
     def initUi(self):
         self.setWindowIcon(QIcon('images/icon.ico'))
@@ -60,6 +63,7 @@ class TranslatorWindow(QMainWindow, Ui_MainWindow):
         return code_lang_from, code_lang_to
 
     def translate(self):
+        pygame.mixer.music.unload()
         self.clear_status_bar()
         trans_text = self.text_from.toPlainText()
 
@@ -77,29 +81,25 @@ class TranslatorWindow(QMainWindow, Ui_MainWindow):
         self.show_status_message('Текст успешно скопирован', 'green')
 
     def play_voice_over(self):
-        engine = pyttsx3.init()  # инициализация движка
-        voices = engine.getProperty('voices')
-
-        try:
-            if self.lang_to.currentText().lower() == 'russian':
-                engine.setProperty('voice', voices[0].id)
-            elif self.lang_to.currentText().lower() == 'english':
-                engine.setProperty('voice', voices[1].id)
-            else:
-                return
-        except Exception:
+        if pygame.mixer.music.get_busy():
+            pygame.mixer.music.unload()
             return
 
-        # зададим свойства
-        engine.setProperty('rate', 200)  # скорость речи
-        engine.setProperty('volume', 1)  # громкость (0-1)
+        if os.path.exists('voices/voice.mp3'):
+            os.remove('voices/voice.mp3')
+        # ограничение на 100 символов в связи с разным интернет-соединением
+        text = self.text_to.toPlainText()[:100]
 
-        text = self.text_to.toPlainText()
+        try:
+            tts = gTTS(text, lang=self.get_lang_pair()[1])
+            tts.save('voices/voice.mp3')
+        except ValueError:
+            self.show_status_message('Такой язык озвучки не поддерживается!')
+            print('Такой язык озвучки не поддерживается!')
+            return
 
-        engine.say(text)  # запись фразы в очередь
-
-        # очистка очереди и воспроизведение текста
-        engine.runAndWait()
+        pygame.mixer.music.load('voices/voice.mp3')
+        pygame.mixer.music.play()
 
     def show_status_message(self, text, color='red'):
         self.statusBar().showMessage(text)

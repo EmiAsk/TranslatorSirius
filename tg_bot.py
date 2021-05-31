@@ -56,7 +56,7 @@ def switch_lang(update, context):
 
     from_lang, to_lang = context.args
 
-    if from_lang not in POSSIBLE_LANGS.values() and to_lang not in POSSIBLE_LANGS.values():
+    if from_lang not in POSSIBLE_LANGS.values() or to_lang not in POSSIBLE_LANGS.values():
         update.message.reply_text(
             "Неподдерживаемые или несуществующие языки!")
         return
@@ -71,6 +71,7 @@ def translate_text(update, context):
 
     if not text_to_trans:
         update.message.reply_text("Вы не написали текст!")
+        return
     text_to_trans = update.message.text[6:]
 
     try:
@@ -87,6 +88,7 @@ def voice_over(update, context):
 
     if not text_to_voice:
         update.message.reply_text("Вы не написали текст!")
+        return
     text_to_voice = ' '.join(context.args).strip()[:100]
 
     try:
