@@ -101,7 +101,9 @@ def voice_over(update, context):
                                caption='Перевод успешно озвучен!')
 
         os.remove(path_to_voice)
-
+    except ValueError:
+        update.message.reply_text('Такой язык озвучки не поддерживается!')
+        print('Такой язык озвучки не поддерживается!')
     except Exception as er:
         print(er)
         update.message.reply_text(er.__str__())
